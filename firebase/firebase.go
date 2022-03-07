@@ -55,12 +55,20 @@ func (f *FirebaseAdmin) CreateCouple(couple models.Couple) string {
 	return id.ID
 }
 
+func (f *FirebaseAdmin) Update(couple models.Couple, doc string) models.Couple {
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
+	defer cancel()
+	ref := f.firestore.Collection("couples")
+	ref.Doc(doc).Set(ctx, couple)
+	return couple
+}
+
+// GetUserCouples This retrieves all user couples as both a creator and couple into a single array, to restrict couple creation when still in a relationship.
 func (f *FirebaseAdmin) GetUserCouples(userID string) []models.Couple {
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
 	defer cancel()
 	var couplesCreated []models.Couple
 	docSnap := f.firestore.Collection("couples").Where("creator_id", "==", userID).Documents(ctx)
-
 	for {
 		var couple models.Couple
 		doc, err := docSnap.Next()
@@ -75,5 +83,46 @@ func (f *FirebaseAdmin) GetUserCouples(userID string) []models.Couple {
 		_ = doc.DataTo(&couple)
 		couplesCreated = append(couplesCreated, couple)
 	}
+
+	couplesAsCouple := f.firestore.Collection("couples").Where("couple_id", "==", userID).Documents(ctx)
+
+	for {
+		var couple models.Couple
+		doc, err := couplesAsCouple.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Println(err.Error())
+			return couplesCreated
+		}
+		fmt.Println(doc.Data())
+		_ = doc.DataTo(&couple)
+		couplesCreated = append(couplesCreated, couple)
+	}
 	return couplesCreated
+}
+
+// GetCoupleByPairingCode This retrieves a created couple by pairing code.
+func (f *FirebaseAdmin) GetCoupleByPairingCode(pairingCode string) (models.Couple, string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
+	defer cancel()
+	var couple models.Couple
+	var docId string
+	docSnap := f.firestore.Collection("couples").Where("pairing_code", "==", pairingCode).Documents(ctx)
+	for {
+		doc, err := docSnap.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Println(err.Error())
+			return couple, ""
+		}
+		fmt.Println(doc.Data())
+		_ = doc.DataTo(&couple)
+		docId = doc.Ref.ID
+
+	}
+	return couple, docId
 }

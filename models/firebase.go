@@ -15,17 +15,25 @@ const (
 )
 
 type Couple struct {
-	CreatorID     string       `json:"creator_id"`
-	CoupleID      string       `json:"couple_id"`
-	CreatedAt     int64        `json:"created_at"`
-	PairingCode   int64        `json:"pairing_code"`
-	Status        CoupleStatus `json:"status"`
-	CreatorImages []Images     `json:"creator_images"`
-	CoupleImages  []Images     `json:"couple_images"`
+	CreatorID     string       `firestore:"creator_id" json:"creator_id"`
+	CoupleID      string       `firestore:"couple_id" json:"couple_id"`
+	CreatedAt     int64        `firestore:"created_at" json:"created_at"`
+	PairingCode   string       `firestore:"pairing_code" json:"pairing_code"`
+	Status        CoupleStatus `firestore:"status" json:"status"`
+	CreatorImages []Images     `firestore:"creator_images" json:"creator_images"`
+	CoupleImages  []Images     `firestore:"couple_images" json:"couple_images"`
+}
+
+type CreateCoupleInput struct {
+	CreatorID string `json:"creator_id"`
+}
+type JoinCoupleInput struct {
+	ID       string `json:"id"`
+	PairCode string `json:"pair_code"`
 }
 
 type Images struct {
-	Name      string `json:"name"`
-	Note      string `json:"note"`
-	Timestamp string `json:"timestamp"`
+	Name      string `firestore:"name" json:"name"`
+	Note      string `firestore:"note" json:"note"`
+	Timestamp string `firestore:"timestamp" json:"timestamp"`
 }
