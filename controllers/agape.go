@@ -80,7 +80,7 @@ func (a *AgapeController) GetUsers(c *gin.Context) {
 }
 
 func (a *AgapeController) GetUserCouples(c *gin.Context) {
-	uid := c.Query("uid")
+	uid := c.Param("uid")
 	couples := a.admin.GetUserCouples(uid)
 	c.JSON(200, couples)
 }
