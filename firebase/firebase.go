@@ -100,7 +100,18 @@ func (f *FirebaseAdmin) GetUserCouples(userID string) []models.Couple {
 		_ = doc.DataTo(&couple)
 		couplesCreated = append(couplesCreated, couple)
 	}
-	return couplesCreated
+	var res []models.Couple
+
+	for _, couple := range couplesCreated {
+		if couple.CreatorImages == nil {
+			couple.CreatorImages = []models.Images{}
+		}
+		if couple.CoupleImages == nil {
+			couple.CoupleImages = []models.Images{}
+		}
+		res = append(res, couple)
+	}
+	return res
 }
 
 // GetCoupleByPairingCode This retrieves a created couple by pairing code.
