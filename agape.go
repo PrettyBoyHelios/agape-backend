@@ -10,9 +10,9 @@ func main() {
 	fbAdmin := firebase.NewFirebaseAdmin()
 	agape := controllers.NewAgapeController(*fbAdmin)
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"message": "agape",
 		})
 	})
 	r.POST("/create", agape.CreateCouple)
