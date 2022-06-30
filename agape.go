@@ -19,5 +19,8 @@ func main() {
 	r.POST("/join", agape.JoinCouple)
 	r.GET("/users", agape.GetUsers)
 	r.GET("/couples/:uid", agape.GetUserCouples)
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	err := r.Run()
+	if err != nil {
+		return
+	} // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
